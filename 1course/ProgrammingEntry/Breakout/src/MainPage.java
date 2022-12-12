@@ -26,7 +26,7 @@ public class MainPage extends BreakoutMain{
 		this.setSize(APPLICATION_WIDTH, APPLICATION_HEIGHT); 
 		screen=1;
 		while(screen!=9){
-		background();
+		background(); 
 		playQuitButtons();
 		addMouseListeners();
 		
@@ -122,7 +122,7 @@ public class MainPage extends BreakoutMain{
 	        }else if (collObj == nextLevel)  {
 	        	click.setVolume(0.5);
 				click.play();
-				lvl++;
+				//lvl++;
 				removeAll();
 				screen=3;
 	        }
