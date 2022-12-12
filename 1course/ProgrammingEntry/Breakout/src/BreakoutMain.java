@@ -25,11 +25,10 @@ public class BreakoutMain extends GraphicsProgram {
 
 	private static final long serialVersionUID = 1L;
 	
-	
+		protected static GImage bg = new GImage("GameBg.png");
 
 	/** The number of the level played */
 		protected static int lvl;
-		
 		
 
 	/** Shows if the sound is being played */
@@ -139,8 +138,12 @@ public class BreakoutMain extends GraphicsProgram {
 		/**
 		 * Images used in the game
 		 */
-		protected GImage background, play, quit, level1, level2,
-		level3, back, close, youWin,youLose, restart, nextLevel;
+		protected static GImage background;
+
+
+
+		protected GImage play, quit, level1, level2, level3, back,
+				close, youWin, youLose, restart, nextLevel;
 
 		
 		/**
@@ -172,8 +175,10 @@ public class BreakoutMain extends GraphicsProgram {
 				waitForClick();
 				removeAll();
 				screen=3;
-				if(lvl!=3) lvl=lvl++;
-				else if(lvl==3)lvl=1;
+				if(lvl!=3) 
+					lvl++;
+				else if(lvl==3)
+					lvl=1;
 				NBRICKS_PER_ROW = 10;
 				NBRICK_ROWS = 10;
 				scoreValue=0;
@@ -195,6 +200,7 @@ public class BreakoutMain extends GraphicsProgram {
 		{
 			
 			this.setSize(APPLICATION_WIDTH, APPLICATION_HEIGHT);
+			add(bg,0,0);
 			PADDLE_WIDTH = 60;
 			BALL_RADIUS = 10;
 			if(lvl==1)
@@ -219,7 +225,6 @@ public class BreakoutMain extends GraphicsProgram {
 			add(score, WIDTH-score.getWidth()-10, score.getHeight()-2);
 			heartInitialization();
 			add(header,0,0);
-			
 		}
 
 		/**
@@ -442,9 +447,9 @@ public class BreakoutMain extends GraphicsProgram {
 		{
 			int chance;
 			if(lvl==3)
-				chance = 1;
+				chance = rgen.nextInt(1,2);
 			else
-				chance = rgen.nextInt(1,3);
+				chance = rgen.nextInt(1,5);
 			if(chance==1)
 				return true;
 			else return false;
@@ -518,16 +523,16 @@ public class BreakoutMain extends GraphicsProgram {
 		private GObject getCollidedObjet()
 		{
 			GObject collObjLD = getElementAt(ball.getX(), ball.getY()+ball.getHeight()); 
-			if(collObjLD!=null)
+			if(collObjLD!=null&&collObjLD!=bg)
 				return collObjLD;
 			GObject collObjRD = getElementAt(ball.getX()+ball.getWidth(), ball.getY()+ball.getHeight());
-			if(collObjRD!=null)
+			if(collObjRD!=null&&collObjRD!=bg)
 				return collObjRD;
 			GObject collObjLU = getElementAt(ball.getX(), ball.getY()); 
-			if(collObjLU!=null)
+			if(collObjLU!=null&&collObjLU!=bg)
 				return collObjLU;
 			GObject collObjRU = getElementAt(ball.getX()+ball.getWidth(), ball.getY());
-			if(collObjRU!=null)
+			if(collObjRU!=null&&collObjRU!=bg)
 				return collObjRU;
 			else
 				return null;
@@ -547,13 +552,13 @@ public class BreakoutMain extends GraphicsProgram {
 			GObject collObjU2 = getElementAt(ball.getX()+ball.getWidth()-Math.abs(vy)-0.1, ball.getY());
 			GObject collObjD1 = getElementAt(ball.getX()+Math.abs(vy)+0.1, ball.getY()+ball.getHeight());
 			GObject collObjD2 = getElementAt(ball.getX()+ball.getWidth()-Math.abs(vy)-0.1, ball.getY()+ball.getHeight());
-			if(collObjD1!=null||collObjD2!=null)
+			if(collObjD1!=null&&collObjD1!=bg||collObjD2!=null&&collObjD2!=bg)
 				return "DOWN";
-			if(collObjR1!=null||collObjR2!=null)
+			if(collObjR1!=null&&collObjR1!=bg||collObjR2!=null&&collObjR2!=bg)
 				return "RIGHT";
-			if(collObjL1!=null||collObjL2!=null)
+			if(collObjL1!=null&&collObjL1!=bg||collObjL2!=null&&collObjL2!=bg)
 				return "LEFT";
-			if(collObjU1!=null||collObjU2!=null)
+			if(collObjU1!=null&&collObjU1!=bg||collObjU2!=null&&collObjU2!=bg)
 				return "UP";
 			else return null;
 		}
@@ -570,7 +575,7 @@ public class BreakoutMain extends GraphicsProgram {
 		{
 			collider=getCollidedObjet();
 			brickLocation=brickLocation();
-			if(collider!=null&&collider!=booster)
+			if(collider!=null&&collider!=booster&&collider!=explanation&&collider!=bg)
 			{
 				if(collider==paddle||collider==header||collider==score)
 				{
@@ -606,8 +611,8 @@ public class BreakoutMain extends GraphicsProgram {
 							for(int j=-1; j<3; j++)
 							{
 								GObject superColider = getElementAt(collider.getX()+collider.getWidth()*j, collider.getY()+collider.getHeight()*i);
-								if(superColider!=null&&superColider!=ball&&superColider!=booster&&superColider!=header&&superColider!=collider&&
-										superColider!=heart1&&superColider!=heart2&&superColider!=heart3&&superColider!=score)
+								if(superColider!=null&&superColider!=ball&&superColider!=booster&&superColider!=header&&superColider!=collider&&superColider!=bg&&
+										superColider!=heart1&&superColider!=heart2&&superColider!=heart3&&superColider!=score&&superColider!=explanation)
 								{
 									remove(superColider);
 									superColider=null;
@@ -669,6 +674,9 @@ public class BreakoutMain extends GraphicsProgram {
 						PADDLE_WIDTH+=20;
 					explanation.setLabel("Paddle size increased!");
 					explanation.setColor(Color.blue);
+					SoundClip boost = new SoundClip("booster.wav");
+					boost.setVolume(0.1);
+					boost.play();
 				}
 				else boosterApply();
 			}
@@ -685,6 +693,9 @@ public class BreakoutMain extends GraphicsProgram {
 					ball=getBall();
 					add(ball, x-2, y-2);
 					explanation.setColor(Color.blue);
+					SoundClip boost = new SoundClip("booster.wav");
+					boost.setVolume(0.1);
+					boost.play();
 				}
 				else boosterApply();
 			}
@@ -696,6 +707,9 @@ public class BreakoutMain extends GraphicsProgram {
 					DELAY+=1;
 					explanation.setLabel("Ball speed decrased!");
 					explanation.setColor(Color.blue);
+					SoundClip boost = new SoundClip("booster.wav");
+					boost.setVolume(0.1);
+					boost.play();
 				}
 				else boosterApply();
 			}
@@ -707,6 +721,9 @@ public class BreakoutMain extends GraphicsProgram {
 					DELAY-=1;
 					explanation.setLabel("Ball speed increased!");
 					explanation.setColor(Color.red);
+					SoundClip boost = new SoundClip("negativeBoost.wav");
+					boost.setVolume(0.1);
+					boost.play();
 				}
 				else boosterApply();
 			}
@@ -719,6 +736,9 @@ public class BreakoutMain extends GraphicsProgram {
 					explanation.setLabel("Paddle size decreased!");
 					explanation.setColor(Color.red);
 					PADDLE_WIDTH-=20;
+					SoundClip boost = new SoundClip("negativeBoost.wav");
+					boost.setVolume(0.1);
+					boost.play();
 				}
 				else boosterApply();
 			}
@@ -735,6 +755,9 @@ public class BreakoutMain extends GraphicsProgram {
 					ball=getBall();
 					add(ball, x-2, y-2);
 					explanation.setColor(Color.red);
+					SoundClip boost = new SoundClip("negativeBoost.wav");
+					boost.setVolume(0.1);
+					boost.play();
 				}
 				else boosterApply();
 			}
@@ -743,16 +766,7 @@ public class BreakoutMain extends GraphicsProgram {
 				superBooster=true;
 				explanation.setLabel("SUPER BOOSTER!");
 				explanation.setColor(Color.yellow);
-			}
-			if(booster<5)
-			{
 				SoundClip boost = new SoundClip("booster.wav");
-				boost.setVolume(0.1);
-				boost.play();
-			}
-			else if(booster>4)
-			{
-				SoundClip boost = new SoundClip("negativeBoost.wav");
 				boost.setVolume(0.1);
 				boost.play();
 			}
@@ -806,52 +820,8 @@ public class BreakoutMain extends GraphicsProgram {
 		protected GImage background(){
 			background = new GImage("background.jpg");
 			background.sendBackward();
-			add(background, 0,0);
+			add(background,0,0);
 			return background;
 		}
-		
-		
-		/*
-		 * booster idea 
-		 * 
-		 * 
-		 * GObject collObjR1 = getElementAt(ball.getX()+ball.getWidth(), ball.getY()+3);
-			GObject collObjR2 = getElementAt(ball.getX()+ball.getWidth(), ball.getY()+ball.getHeight()-3);
-			GObject collObjL1 = getElementAt(ball.getX(), ball.getY()+vy);
-			GObject collObjL2 = getElementAt(ball.getX(), ball.getY()+ball.getHeight()-vy);
-			GObject collObjU1 = getElementAt(ball.getX()+vy, ball.getY());
-			GObject collObjU2 = getElementAt(ball.getX()+ball.getWidth()-vy, ball.getY());
-			GObject collObjD1 = getElementAt(ball.getX()+vy, ball.getY()+ball.getHeight());
-			GObject collObjD2 = getElementAt(ball.getX()+ball.getWidth()-vy, ball.getY()+ball.getHeight());
-			if(collObjD1!=null||collObjD2!=null)
-				return "DOWN";
-			if(collObjR1!=null||collObjR2!=null)
-				return "RIGHT";
-			if(collObjL1!=null||collObjL2!=null)
-				return "LEFT";
-			if(collObjU1!=null||collObjU2!=null)
-				return "UP";
-			else return null;
-		 */
-		
-		
-		/*private String brickLocation()
-		{
-			GObject collObjD = getElementAt(ball.getX()+BALL_RADIUS, ball.getY()+ball.getHeight()+0.01);
-			GObject collObjU = getElementAt(ball.getX()+BALL_RADIUS, ball.getY()-0.01);
-			GObject collObjR = getElementAt(ball.getX()+ball.getWidth()+0.01, ball.getY()+BALL_RADIUS);
-			GObject collObjL = getElementAt(ball.getX()-0.01, ball.getY()+BALL_RADIUS);
-			if(collObjU!=null)
-				return "UP";
-			if(collObjD!=null)
-				return "DOWN";
-			if(collObjR!=null)
-				return "RIGHT";
-			if(collObjL!=null)
-				return "LEFT";
-			else return null;
-		}
-		*/
-		
 	}
 
